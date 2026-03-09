@@ -6,10 +6,16 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "edge-tts>=7.2.7",
+    "faster-whisper>=1.2.1",
     "langchain>=1.2.9",
     "langchain-google-genai>=4.2.0",
     "langgraph>=1.0.8",
+    "numpy>=2.4.2",
+    "nvidia-cublas-cu12>=12.9.1.4",
+    "nvidia-cudnn-cu12>=9.19.0.56",
     "python-dotenv>=1.2.1",
+    "scipy>=1.17.1",
+    "sounddevice>=0.5.5",
     "streamlit>=1.54.0",
     "trafilatura>=2.0.0",
 ]
