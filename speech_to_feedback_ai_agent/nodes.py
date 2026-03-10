@@ -4,17 +4,41 @@ import tempfile
 import numpy as np
 import sounddevice as sd
 from config import GLOBAL_WHISPER_MODEL, AppConfig
-from schemas import Agentstate
+from schemas import AgentState
 from scipy.io.wavfile import write
 
 
-def run_intial_configuration(state: Agentstate) -> Agentstate:
-    pass
+def run_initialize_session(state: AgentState) -> AgentState:
+    """Sets up the initial environment and state variables."""
+    return state
 
-def run_ask_question(state: Agentstate) -> Agentstate:
-    pass
+def run_check_system_readiness(state: AgentState) -> str:
+    """Validates hardware/API access before starting."""
+    questions = state.get("questions")
+    if not questions:
+        return "failure"
 
-def run_record_and_transcribe_answer():
+    idx = state.get("idx")
+    if idx != 0:
+        return "failure"
+
+    return "success"
+
+def run_deliver_question(state: AgentState) -> AgentState:
+    """Triggers the AI to ask the current question."""
+    idx = state.get("idx")
+    questions = state.get("questions")
+
+    print("-"*100)
+    print("-"*46 + "QUESTION" + "-"*46)
+    print(questions[idx])
+    print("-"*100)
+
+    return state
+
+def run_capture_and_process_response(state: AgentState) -> AgentState:
+    """Handles audio recording and speech-to-text conversion."""
+    return state
     print(f"--- Listening for {AppConfig.RECORD_SECONDS}s ---")
 
     recording = sd.rec(
@@ -36,3 +60,6 @@ def run_record_and_transcribe_answer():
     os.remove(tmp_path)
     return full_text.strip()
 
+def run_decide_next_step(state: AgentState) -> str:
+    """Determines if more questions remain or if the session is complete."""
+    pass

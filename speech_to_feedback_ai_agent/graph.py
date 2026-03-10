@@ -1,18 +1,41 @@
 from langgraph.graph import END, START, StateGraph
-from nodes import run_ask_question, run_intial_configuration, run_record_and_transcribe_answer
-from schemas import Agentstate
+from nodes import (
+    run_capture_and_process_response,
+    run_check_system_readiness,
+    run_decide_next_step,
+    run_deliver_question,
+    run_initialize_session,
+)
+from schemas import AgentState
 
 
 # TODO: Incomplete Graph
 def build_graph():
-    workflow = StateGraph(Agentstate)
+    workflow = StateGraph(AgentState)
 
-    workflow.add_node("intial_configuration", run_intial_configuration)
-    workflow.add_node("ask_question", run_ask_question)
-    workflow.add_node("record_and_transcribe_answer", run_record_and_transcribe_answer)
+    workflow.add_node("initialize_session", run_initialize_session)
+    workflow.add_node("deliver_question", run_deliver_question)
+    workflow.add_node("capture_and_process_response", run_capture_and_process_response)
 
-    workflow.add_edge(START, "intial_configuration")
-    workflow.add_edge("intial_configuration", "ask_question")
-    workflow.add_edge("ask_question", "record_and_transcribe_answer")
-    workflow.add_edge("record_and_transcribe_answer", END)
+    workflow.add_edge(START, "initialize_session")
+    workflow.add_conditional_edges(
+        "initialize_session",
+        run_check_system_readiness,
+        {
+            "success": "deliver_question",
+            "failure": END
+        }
+    )
+
+    workflow.add_edge("deliver_question", "capture_and_process_response")
+    workflow.add_conditional_edges(
+        "capture_and_process_response",
+        run_decide_next_step,
+        {
+            "yes": "deliver_question",
+            "no": END
+        }
+    )
+
+    return workflow.compile()
 
